@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  config-server:
+    build: ./config-server
+    container_name: "config-server"
+    hostname: config
+    #    убрать порты
+    ports:
+      - "8888:8888"
+
+  eureka-server:
+    build: ./eureka-server
+    container_name: "eureka-server"
+    hostname: service-registry
+    depends_on:
+      - config-server
+    ports:
+      - "8080:8761"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+
+  gateway:
+    build: ./api-gateway
+    container_name: "api-gateway"
+    depends_on:
+      - phone-notification-service
+      - push-notification-service
+      - email-notification-service
+    ports:
+      - "8081:8765"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+
+  phone-notification-service:
+    build: ./phone-notification-service
+    container_name: "phone-notification"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+      - CONFIG_SERVER_HOST_NAME=config
+
+  push-notification-service:
+    build: ./push-notification-service
+    container_name: "push-notification"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+      - CONFIG_SERVER_HOST_NAME=config
+
+  email-notification-service:
+    build: ./email-notification-service
+    container_name: "email-notification"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+      - CONFIG_SERVER_HOST_NAME=config
