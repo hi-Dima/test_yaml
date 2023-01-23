@@ -1,0 +1,24 @@
+server:
+  port: 8765
+
+# id сервера eureka, приложения, где будет запускаться
+spring:
+  application:
+    name: "api-gateway"
+
+# Натсроки для шлюза
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+# куда будет проходить регистрация микросервисов
+eureka:
+  client:
+    service-url:
+      defaultZone: "http://localhost:8761/eureka"
+
+
+
