@@ -1,12 +1,9 @@
-# Устанавливаем ноль, чтобы автоматически присваивался порт
-server:
-  port: 0
-
 # id сервера eureka, приложения, где будет запускаться
 spring:
   application:
     name: "email-notification-service"
-
+  config:
+    import: optional:configserver:http://${CONFIG_SERVER_HOST_NAME:localhost}:8888
 # куда будет проходить регистрация микросервисов
 eureka:
   client:
